@@ -17,10 +17,22 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: Material(
-        child: SizedBox(
-          width: 200,
-          height: 50,
-          child: FlutterAnimateBorder(),
+        color: Colors.black,
+        child: Center(
+          child: SizedBox(
+            width: 200,
+            height: 60,
+            child: FlutterAnimateBorder(
+              decoratedBox: BoxDecoration(
+                color: Colors.amber,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              label: Text(
+                'Button',
+                style: TextStyle(fontSize: 24),
+              ),
+            ),
+          ),
         ),
       ),
     );
