@@ -1,0 +1,17 @@
+name: flutter_animate_border
+description: "A new Flutter package project."
+version: 0.0.1
+homepage: This is a animate border
+
+environment:
+  sdk: ^3.6.2
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
