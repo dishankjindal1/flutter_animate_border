@@ -18,21 +18,43 @@ class MyApp extends StatelessWidget {
       ),
       home: Material(
         color: Colors.black,
-        child: Center(
-          child: SizedBox(
-            width: 200,
-            height: 60,
-            child: FlutterAnimateBorder(
-              decoratedBox: BoxDecoration(
-                color: Colors.amber,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              label: Text(
-                'Button',
-                style: TextStyle(fontSize: 24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Center(
+              child: SizedBox(
+                width: 200,
+                height: 60,
+                child: FlutterAnimateBorder(
+                  decoratedBox: BoxDecoration(
+                    color: Colors.yellow.withAlpha(50),
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  label: Text(
+                    'Button',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                ),
               ),
             ),
-          ),
+            SizedBox.square(dimension: 40),
+            Center(
+              child: SizedBox(
+                width: 200,
+                height: 200,
+                child: FlutterAnimateBorder(
+                  decoratedBox: BoxDecoration(
+                    color: Colors.yellow.withAlpha(50),
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  label: Text(
+                    'Button',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
