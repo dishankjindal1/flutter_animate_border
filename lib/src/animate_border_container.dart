@@ -18,143 +18,147 @@ class FlutterAnimateBorder extends StatefulWidget {
   State<FlutterAnimateBorder> createState() => _FlutterAnimateBorderState();
 }
 
-enum AnimationDirection {
-  RIGHT,
-  DOWN,
-  LEFT,
-  UP;
+class CustomCurve extends Curve {
+  @override
+  double transform(double t) {
+    if (t == 0.0 || t == 1.0) {
+      return t;
+    }
 
-  bool get isRight => this == RIGHT;
-  bool get isDown => this == DOWN;
-  bool get isLeft => this == LEFT;
-  bool get isUp => this == UP;
-  bool get isRightLeft => isRight || isLeft;
-  bool get isUpDown => isUp || isDown;
+    return t;
 
-  AnimationDirection toggle() => switch (this) {
-        RIGHT => DOWN,
-        DOWN => LEFT,
-        LEFT => UP,
-        UP => RIGHT,
-      };
+    // if (t < 0.25) {
+    //   return math.pow(math.sin(math.pi * t), 2).toDouble();
+    // } else if (t < 0.5) {
+    //   return math.pow(0.25 + math.sin(math.pi * t), 2).toDouble();
+    // } else if (t < 0.75) {
+    //   return math.pow(0.5 + math.sin(math.pi * t), 2).toDouble();
+    // } else {
+    //   return math.pow(0.75 + math.sin(math.pi * t), 2).toDouble();
+    // }
+  }
 }
 
 class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
     with SingleTickerProviderStateMixin {
   /// Mutable
-  late (double, double) actor = (0, 0);
-  (double, double)? boxSize;
-  AnimationDirection direction = AnimationDirection.RIGHT;
+  late Offset actor = Offset(0, 0);
+  Offset box = Offset(0, 0);
 
   /// Immutable
-  late double borderRadius =
+  late double radius =
       (widget.decoratedBox.borderRadius as BorderRadius).bottomLeft.x;
 
   /// Controllers
   late final AnimationController animationController;
   late final Animation<double> animationValue;
 
+  void _calculate() {
+    final findTheMinSize = math.min(box.dx, box.dy);
+    final maxCornerRadius = findTheMinSize / 2;
+    final pickMinCornerRadius = math.min(radius, maxCornerRadius);
+
+    radius = pickMinCornerRadius;
+  }
+
   @override
   void initState() {
     super.initState();
     animationController = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 3),
+      duration: Duration(seconds: 4),
     );
     animationValue = animationController.drive(
-      CurveTween(curve: Curves.linear),
+      CurveTween(curve: CustomCurve()),
     );
 
     animationController.forward();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _calculateBorderRadius();
-      actor = (borderRadius / 2, 0);
+      _calculate();
       animationController.addListener(_updateUi);
       animationController.addStatusListener(_restartAnimation);
     });
   }
 
-  double _normalize(double val, double min, double max) {
-    return (val - min) / (max - min);
+  // Helper function to calculate arc points
+  Offset arcPoint(double cx, double cy, double startAngle, double angle) {
+    final x = cx + radius * math.cos(startAngle + angle);
+
+    final y = cy + radius * math.sin(startAngle + angle);
+
+    return Offset(x, y);
   }
 
-  double? lastValue;
   void _updateUi() {
-    if (boxSize == null) return;
-
-    if (direction.isRight) {
-      if (actor.$1 >= boxSize!.$1 - borderRadius) {
-        lastValue ??= animationValue.value;
-        final goingRightDown = borderRadius *
-            Tween<double>(begin: 0, end: 1)
-                .transform(_normalize(animationValue.value, lastValue!, 1));
-
-        actor = (actor.$1, goingRightDown);
-      }
-      actor = (
-        borderRadius + ((boxSize!.$1 - borderRadius) * animationValue.value),
-        actor.$2
-      );
-    } else if (direction.isDown) {
-      if (actor.$2 >= boxSize!.$2 - borderRadius) {
-        lastValue ??= animationValue.value;
-        final goingDownLeft = borderRadius *
-            Tween<double>(begin: 0, end: 1)
-                .transform(_normalize(animationValue.value, lastValue!, 1));
-
-        actor = (boxSize!.$1 - goingDownLeft, actor.$2);
-      }
-
-      actor = (
-        actor.$1,
-        borderRadius + (boxSize!.$2 - borderRadius) * animationValue.value
-      );
-    } else if (direction.isLeft) {
-      if (borderRadius >= actor.$1) {
-        lastValue ??= animationValue.value;
-        final goingUpLeft = boxSize!.$2 -
-            (borderRadius *
-                Tween<double>(begin: 0, end: 1).transform(
-                    _normalize(animationValue.value, lastValue!, 1)));
-
-        actor = (actor.$1, goingUpLeft);
-      }
-
-      actor = (
-        boxSize!.$1 -
-            borderRadius -
-            (animationValue.value * (boxSize!.$1 - borderRadius)),
-        actor.$2
-      );
-    } else if (direction.isUp) {
-      if (borderRadius >= actor.$2) {
-        lastValue ??= animationValue.value;
-        final goingUpRight = borderRadius *
-            Tween<double>(begin: 0, end: 1)
-                .transform(_normalize(animationValue.value, lastValue!, 1));
-
-        actor = (goingUpRight, actor.$2);
-      }
-
-      actor = (
-        actor.$1,
-        boxSize!.$2 -
-            borderRadius -
-            ((boxSize!.$2 - borderRadius) * animationValue.value)
-      );
-    } else {
-      throw Exception('something messed up');
-    }
-
-    if (animationValue.value == 1) {
-      direction = direction.toggle();
-      lastValue = null;
-    }
-
     if (mounted) {
       setState(() {
-        /// refresh ui
+        final edgeH = box.dx - 2 * radius;
+        final edgeV = box.dy - 2 * radius;
+        final arc = (math.pi / 2) * radius;
+        final perimeter = 2 * (edgeH + edgeV) + 4 * arc;
+
+        double d = perimeter * animationValue.value;
+
+        if (d < edgeH) {
+          actor = Offset(d + radius, 0);
+          return;
+        }
+
+        d -= edgeH;
+
+        if (d < arc) {
+          final angle = d / radius;
+          actor = arcPoint(box.dx - radius, radius, 3 * math.pi / 2, angle);
+          return;
+        }
+
+        d -= arc;
+
+        if (d < edgeH) {
+          actor = Offset(box.dx, d + radius);
+          return;
+        }
+
+        d -= edgeH;
+
+        if (d < arc) {
+          final angle = d / radius;
+          actor = arcPoint(box.dx - radius, box.dy - radius, 0, angle);
+          return;
+        }
+
+        d -= arc;
+
+        if (d < edgeH) {
+          actor = Offset(box.dx - d - radius, box.dy);
+          return;
+        }
+
+        d -= edgeH;
+
+        if (d < arc) {
+          final angle = d / radius;
+          actor = arcPoint(radius, box.dy - radius, math.pi / 2, angle);
+          return;
+        }
+
+        d -= arc;
+
+        if (d < edgeH) {
+          actor = Offset(0, box.dy - d - radius);
+          return;
+        }
+
+        d -= edgeH;
+
+        if (d < arc) {
+          final angle = d / radius;
+          actor = arcPoint(radius, radius, math.pi, angle);
+          return;
+        }
+
+        d -= arc;
       });
     }
   }
@@ -166,19 +170,12 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
     }
   }
 
-  void _calculateBorderRadius() {
-    final findTheMinSize = math.min(boxSize!.$1, boxSize!.$2);
-    final maxCornerRadius = findTheMinSize / 2;
-    final pickMinCornerRadius = math.min(borderRadius, maxCornerRadius);
-    borderRadius = pickMinCornerRadius;
-  }
-
   @override
   void didUpdateWidget(covariant FlutterAnimateBorder oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.decoratedBox != widget.decoratedBox) {
-      _calculateBorderRadius();
+      _calculate();
     }
   }
 
@@ -195,28 +192,24 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
     return GestureDetector(
       onTap: () async {
         animationController.reset();
-        actor = (borderRadius / 2, 0);
-        direction = AnimationDirection.RIGHT;
-        setState(() {});
+        setState(() {
+          /// refresh ui
+        });
         animationController.forward();
       },
       child: LayoutBuilder(builder: (context, constraints) {
-        boxSize = (constraints.maxWidth, constraints.maxHeight);
+        box = Offset(constraints.maxWidth, constraints.maxHeight);
         return CustomPaint(
           willChange: kDebugMode,
           painter: AnimateBorder(
             [actor],
-            strokeWidth: 40,
-            borderRadius: borderRadius,
+            strokeWidth: 2,
+            borderRadius: radius,
             shader: (actor, glowRadius) => ui.Gradient.radial(
               actor,
-              10,
-              [
-                Colors.teal,
-                Colors.red,
-                Colors.transparent,
-              ],
-              [0, 0.7, 1],
+              50,
+              [Colors.teal, Colors.teal.withAlpha(50), Colors.transparent],
+              [0, 0.75, 1],
             ),
           ),
           child: Container(
@@ -231,7 +224,7 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
 }
 
 class AnimateBorder extends CustomPainter {
-  final List<(double, double)> actors;
+  final List<Offset> actors;
   final Color primaryColor;
   final double strokeWidth;
   final double borderRadius;
@@ -266,9 +259,7 @@ class AnimateBorder extends CustomPainter {
     }
 
     for (var actor in actors) {
-      final offset = Offset(actor.$1, actor.$2);
-
-      drawActor(offset);
+      drawActor(actor);
     }
   }
 

@@ -24,23 +24,6 @@ class MyApp extends StatelessWidget {
             Center(
               child: SizedBox(
                 width: 200,
-                height: 60,
-                child: FlutterAnimateBorder(
-                  decoratedBox: BoxDecoration(
-                    color: Colors.yellow.withAlpha(50),
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                  label: Text(
-                    'Button',
-                    style: TextStyle(fontSize: 24),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox.square(dimension: 40),
-            Center(
-              child: SizedBox(
-                width: 200,
                 height: 200,
                 child: FlutterAnimateBorder(
                   decoratedBox: BoxDecoration(
