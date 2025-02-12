@@ -17,25 +17,79 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: Material(
-        color: Colors.black,
+        color: Color(0xFF0F0F1F),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Center(
-              child: SizedBox(
-                width: 200,
-                height: 200,
-                child: FlutterAnimateBorder(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FlutterAnimateBorder(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
                   decoratedBox: BoxDecoration(
-                    color: Colors.yellow.withAlpha(50),
+                    color: Colors.black,
                     borderRadius: BorderRadius.circular(50),
+                    border: Border.all(color: Colors.teal.withAlpha(100)),
                   ),
-                  label: Text(
+                  colors: [Colors.teal, Colors.transparent],
+                  colorsStops: [0.1, 0.5],
+                  widget: Text(
                     'Button',
-                    style: TextStyle(fontSize: 24),
+                    style: TextStyle(fontSize: 24, color: Colors.white),
                   ),
                 ),
-              ),
+                SizedBox.square(dimension: 24),
+                FlutterAnimateBorder(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                  decoratedBox: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(50),
+                    border: Border.all(color: Colors.teal.withAlpha(100)),
+                  ),
+                  colors: [Colors.red, Colors.green, Colors.blue],
+                  colorsStops: [0, 0.5, 1],
+                  widget: Text(
+                    'Button',
+                    style: TextStyle(fontSize: 24, color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox.square(dimension: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FlutterAnimateBorder(
+                  decoratedBox: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(50),
+                    border: Border.all(color: Colors.teal.withAlpha(100)),
+                  ),
+                  widget: IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.share,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox.square(dimension: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FlutterAnimateBorder(
+                  decoratedBox: BoxDecoration(
+                    color: Colors.black,
+                    border: Border.all(
+                      color: Colors.teal.withAlpha(100),
+                      width: 2,
+                    ),
+                  ),
+                  widget: Image.network('https://picsum.photos/150'),
+                ),
+              ],
             ),
           ],
         ),

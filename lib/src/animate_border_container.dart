@@ -1,64 +1,73 @@
+import 'dart:async';
 import 'dart:math' as math;
-import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate_border/src/painters/animate_border_painter.dart';
 
 class FlutterAnimateBorder extends StatefulWidget {
   const FlutterAnimateBorder({
-    required this.label,
+    required this.widget,
     required this.decoratedBox,
+    this.padding = const EdgeInsets.all(0.0),
+    this.loopDuration = const Duration(seconds: 3),
+    this.loopCurve = Curves.linear,
+    this.colors = const [Colors.teal, Colors.teal],
+    this.colorsStops = const [0, 1],
     super.key,
   });
 
-  final Widget label;
+  final Widget widget;
   final BoxDecoration decoratedBox;
+  final EdgeInsets padding;
+  final Duration loopDuration;
+  final Curve loopCurve;
+  final List<Color> colors;
+  final List<double> colorsStops;
 
   @override
   State<FlutterAnimateBorder> createState() => _FlutterAnimateBorderState();
 }
 
-class CustomCurve extends Curve {
-  @override
-  double transform(double t) {
-    if (t == 0.0 || t == 1.0) {
-      return t;
-    }
-
-    return t;
-
-    // if (t < 0.25) {
-    //   return math.pow(math.sin(math.pi * t), 2).toDouble();
-    // } else if (t < 0.5) {
-    //   return math.pow(0.25 + math.sin(math.pi * t), 2).toDouble();
-    // } else if (t < 0.75) {
-    //   return math.pow(0.5 + math.sin(math.pi * t), 2).toDouble();
-    // } else {
-    //   return math.pow(0.75 + math.sin(math.pi * t), 2).toDouble();
-    // }
-  }
-}
-
 class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
     with SingleTickerProviderStateMixin {
   /// Mutable
-  late Offset actor = Offset(0, 0);
+  Offset actor = Offset(0, 0);
   Offset box = Offset(0, 0);
+  double radius = 0;
+  double thickness = 0;
+  Gradient? gradient;
 
   /// Immutable
-  late double radius =
-      (widget.decoratedBox.borderRadius as BorderRadius).bottomLeft.x;
+  final globalKey = GlobalKey();
 
   /// Controllers
   late final AnimationController animationController;
   late final Animation<double> animationValue;
 
   void _calculate() {
-    final findTheMinSize = math.min(box.dx, box.dy);
-    final maxCornerRadius = findTheMinSize / 2;
-    final pickMinCornerRadius = math.min(radius, maxCornerRadius);
+    final renderBox =
+        globalKey.currentContext?.findRenderObject() as RenderBox?;
 
-    radius = pickMinCornerRadius;
+    if (renderBox != null) {
+      if (mounted) {
+        setState(() {
+          box = Offset(renderBox.size.width, renderBox.size.height);
+          gradient = widget.decoratedBox.gradient;
+          thickness = widget.decoratedBox.border?.bottom.width ?? thickness;
+          radius = (widget.decoratedBox.borderRadius as BorderRadius?)
+                  ?.bottomLeft
+                  .x ??
+              0;
+          final findTheMinSize = math.min(box.dx, box.dy);
+          final maxCornerRadius = findTheMinSize / 2;
+          final pickMinCornerRadius = math.min(radius, maxCornerRadius);
+          radius = pickMinCornerRadius;
+        });
+      }
+    } else {
+      scheduleMicrotask(_calculate);
+    }
   }
 
   @override
@@ -66,18 +75,18 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
     super.initState();
     animationController = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 4),
-    );
-    animationValue = animationController.drive(
-      CurveTween(curve: CustomCurve()),
+      duration: widget.loopDuration,
     );
 
-    animationController.forward();
+    animationValue = animationController.drive(
+      CurveTween(curve: widget.loopCurve),
+    );
+
+    animationController.repeat();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _calculate();
       animationController.addListener(_updateUi);
-      animationController.addStatusListener(_restartAnimation);
     });
   }
 
@@ -115,12 +124,12 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
 
         d -= arc;
 
-        if (d < edgeH) {
+        if (d < edgeV) {
           actor = Offset(box.dx, d + radius);
           return;
         }
 
-        d -= edgeH;
+        d -= edgeV;
 
         if (d < arc) {
           final angle = d / radius;
@@ -145,12 +154,12 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
 
         d -= arc;
 
-        if (d < edgeH) {
+        if (d < edgeV) {
           actor = Offset(0, box.dy - d - radius);
           return;
         }
 
-        d -= edgeH;
+        d -= edgeV;
 
         if (d < arc) {
           final angle = d / radius;
@@ -160,13 +169,6 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
 
         d -= arc;
       });
-    }
-  }
-
-  void _restartAnimation(AnimationStatus status) {
-    if (status.isCompleted) {
-      animationController.reset();
-      animationController.forward();
     }
   }
 
@@ -180,94 +182,39 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
   }
 
   @override
+  void reassemble() {
+    super.reassemble();
+    _calculate();
+  }
+
+  @override
   void dispose() {
     animationController.removeListener(_updateUi);
-    animationController.removeStatusListener(_restartAnimation);
     animationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(final BuildContext context) {
-    return GestureDetector(
-      onTap: () async {
-        animationController.reset();
-        setState(() {
-          /// refresh ui
-        });
-        animationController.forward();
-      },
-      child: LayoutBuilder(builder: (context, constraints) {
-        box = Offset(constraints.maxWidth, constraints.maxHeight);
-        return CustomPaint(
-          willChange: kDebugMode,
-          painter: AnimateBorder(
-            [actor],
-            strokeWidth: 2,
-            borderRadius: radius,
-            shader: (actor, glowRadius) => ui.Gradient.radial(
-              actor,
-              50,
-              [Colors.teal, Colors.teal.withAlpha(50), Colors.transparent],
-              [0, 0.75, 1],
-            ),
-          ),
-          child: Container(
-            alignment: Alignment.center,
-            decoration: widget.decoratedBox,
-            child: widget.label,
-          ),
-        );
-      }),
+    return CustomPaint(
+      willChange: kDebugMode,
+      foregroundPainter: AnimateBorderPainter(
+        actors: [actor],
+        strokeWidth: thickness,
+        radius: radius,
+        gradient: LinearGradient(
+          colors: widget.colors,
+          stops: widget.colorsStops,
+          tileMode: TileMode.mirror,
+        ),
+      ),
+      child: Container(
+        key: globalKey,
+        padding: widget.padding,
+        alignment: Alignment.center,
+        decoration: widget.decoratedBox,
+        child: widget.widget,
+      ),
     );
-  }
-}
-
-class AnimateBorder extends CustomPainter {
-  final List<Offset> actors;
-  final Color primaryColor;
-  final double strokeWidth;
-  final double borderRadius;
-  final double? glowRadius;
-  final Shader Function(Offset, double)? shader;
-
-  const AnimateBorder(
-    this.actors, {
-    this.primaryColor = Colors.transparent,
-    this.strokeWidth = 1,
-    this.borderRadius = 0,
-    this.glowRadius,
-    this.shader,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    void drawActor(Offset actor) {
-      /// Constants
-      final paint = ui.Paint();
-      paint.strokeWidth = strokeWidth;
-      paint.strokeCap = StrokeCap.round;
-      paint.style = PaintingStyle.stroke;
-      paint.shader = shader?.call(actor, glowRadius ?? size.height / 2);
-
-      final rrect = RRect.fromRectAndRadius(
-        Rect.fromLTWH(0, 0, size.width, size.height),
-        Radius.circular(borderRadius),
-      );
-
-      canvas.drawRRect(rrect, paint);
-    }
-
-    for (var actor in actors) {
-      drawActor(actor);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    if (oldDelegate is AnimateBorder) {
-      return oldDelegate.actors != actors;
-    }
-    return false;
   }
 }
