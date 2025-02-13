@@ -55,7 +55,8 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
           box = Offset(renderBox.size.width, renderBox.size.height);
           gradient = widget.decoratedBox.gradient;
           thickness = widget.decoratedBox.border?.bottom.width ?? thickness;
-          radius = (widget.decoratedBox.borderRadius as BorderRadius?)
+          radius =
+              (widget.decoratedBox.borderRadius as BorderRadius?)
                   ?.bottomLeft
                   .x ??
               0;
@@ -203,7 +204,9 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
           globalKey.currentContext?.findRenderObject() as RenderBox?;
 
       box = Offset(
-          renderBox?.size.width ?? box.dx, renderBox?.size.height ?? box.dy);
+        renderBox?.size.width ?? box.dx,
+        renderBox?.size.height ?? box.dy,
+      );
     }
 
     return CustomPaint(
