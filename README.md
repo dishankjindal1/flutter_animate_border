@@ -1,6 +1,6 @@
 # Flutter Animate Border
 
-[image](https://raw.githubusercontent.com/dishankjindal1/flutter_animate_border/refs/heads/develop/screenshot_1.gif)
+![image](https://raw.githubusercontent.com/dishankjindal1/flutter_animate_border/refs/heads/develop/screenshot_1.gif)
 
 ## UPCOMING
 
