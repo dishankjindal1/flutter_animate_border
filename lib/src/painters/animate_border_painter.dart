@@ -26,13 +26,13 @@ class AnimateBorderPainter extends CustomPainter {
 
       final extendLine = 50;
 
-      final path = Path()
-        ..addRRect(
-          RRect.fromRectAndRadius(
-            Rect.fromLTWH(0, 0, size.width, size.height),
-            Radius.circular(radius),
-          ),
-        );
+      final path =
+          Path()..addRRect(
+            RRect.fromRectAndRadius(
+              Rect.fromLTWH(0, 0, size.width, size.height),
+              Radius.circular(radius),
+            ),
+          );
 
       final metrics = path.computeMetrics().first;
       final totalLength = metrics.length;
