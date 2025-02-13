@@ -7,7 +7,7 @@ import 'package:flutter_animate_border/src/painters/animate_border_painter.dart'
 
 class FlutterAnimateBorder extends StatefulWidget {
   const FlutterAnimateBorder({
-    required this.widget,
+    required this.child,
     required this.decoratedBox,
     this.padding = const EdgeInsets.all(0.0),
     this.loopDuration = const Duration(seconds: 3),
@@ -17,7 +17,7 @@ class FlutterAnimateBorder extends StatefulWidget {
     super.key,
   });
 
-  final Widget widget;
+  final Widget child;
   final BoxDecoration decoratedBox;
   final EdgeInsets padding;
   final Duration loopDuration;
@@ -196,6 +196,16 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
 
   @override
   Widget build(final BuildContext context) {
+    /// Because image widget can infer its own height and width
+    /// after loading, so we need to count in that new dimensions
+    if (widget.child is Image) {
+      final renderBox =
+          globalKey.currentContext?.findRenderObject() as RenderBox?;
+
+      box = Offset(
+          renderBox?.size.width ?? box.dx, renderBox?.size.height ?? box.dy);
+    }
+
     return CustomPaint(
       willChange: kDebugMode,
       foregroundPainter: AnimateBorderPainter(
@@ -213,7 +223,7 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
         padding: widget.padding,
         alignment: Alignment.center,
         decoration: widget.decoratedBox,
-        child: widget.widget,
+        child: widget.child,
       ),
     );
   }

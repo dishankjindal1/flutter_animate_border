@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
                   ),
                   colors: [Colors.teal, Colors.transparent],
                   colorsStops: [0.1, 0.5],
-                  widget: Text(
+                  child: Text(
                     'Button',
                     style: TextStyle(fontSize: 24, color: Colors.white),
                   ),
@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
                   ),
                   colors: [Colors.red, Colors.green, Colors.blue],
                   colorsStops: [0, 0.5, 1],
-                  widget: Text(
+                  child: Text(
                     'Button',
                     style: TextStyle(fontSize: 24, color: Colors.white),
                   ),
@@ -65,7 +65,7 @@ class MyApp extends StatelessWidget {
                     borderRadius: BorderRadius.circular(50),
                     border: Border.all(color: Colors.teal.withAlpha(100)),
                   ),
-                  widget: IconButton(
+                  child: IconButton(
                     onPressed: () {},
                     icon: Icon(
                       Icons.share,
@@ -87,7 +87,7 @@ class MyApp extends StatelessWidget {
                       width: 2,
                     ),
                   ),
-                  widget: Image.network('https://picsum.photos/150'),
+                  child: Image.network('https://picsum.photos/150'),
                 ),
               ],
             ),
