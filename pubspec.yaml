@@ -1,7 +1,7 @@
 name: flutter_animate_border
-description: "A new Flutter package project."
+description: "This is a animate border package"
 version: 0.0.2
-homepage: This is a animate border package
+homepage: https://github.com/dishankjindal1/flutter_animate_border
 
 environment:
   sdk: ^3.7.0
