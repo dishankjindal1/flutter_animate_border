@@ -1,29 +1,25 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate_border/src/painters/animate_border_painter.dart';
+import 'package:flutter_animate_border/src/controller/controller.dart';
+import 'package:flutter_animate_border/src/painters/default_painter.dart';
 
+/// [FlutterAnimateBorder] is the main widget which wrap around your content, it acts as a [Container] so you dont need to pass your own [Container] as a child. Instead pass the [DecoratedBox] and [Padding] property to the controller [FlutterAnimateBorderController]
 class FlutterAnimateBorder extends StatefulWidget {
+  /// constructor
   const FlutterAnimateBorder({
+    required this.controller,
     required this.child,
-    required this.decoratedBox,
-    this.padding = const EdgeInsets.all(0.0),
-    this.loopDuration = const Duration(seconds: 3),
-    this.loopCurve = Curves.linear,
-    this.colors = const [Colors.teal, Colors.teal],
-    this.colorsStops = const [0, 1],
     super.key,
   });
 
+  /// This controller is used to control the behavior and look of the
+  /// widget.
+  final FlutterAnimateBorderController controller;
+
+  /// Pass your [Text] widget or [Image] widget to it
   final Widget child;
-  final BoxDecoration decoratedBox;
-  final EdgeInsets padding;
-  final Duration loopDuration;
-  final Curve loopCurve;
-  final List<Color> colors;
-  final List<double> colorsStops;
 
   @override
   State<FlutterAnimateBorder> createState() => _FlutterAnimateBorderState();
@@ -53,10 +49,12 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
       if (mounted) {
         setState(() {
           box = Offset(renderBox.size.width, renderBox.size.height);
-          gradient = widget.decoratedBox.gradient;
-          thickness = widget.decoratedBox.border?.bottom.width ?? thickness;
+          gradient = widget.controller.boxDecoration?.gradient;
+          thickness =
+              widget.controller.boxDecoration?.border?.bottom.width ??
+              thickness;
           radius =
-              (widget.decoratedBox.borderRadius as BorderRadius?)
+              (widget.controller.boxDecoration?.borderRadius as BorderRadius?)
                   ?.bottomLeft
                   .x ??
               0;
@@ -64,6 +62,10 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
           final maxCornerRadius = findTheMinSize / 2;
           final pickMinCornerRadius = math.min(radius, maxCornerRadius);
           radius = pickMinCornerRadius;
+
+          if (widget.controller.boxDecoration?.shape == BoxShape.circle) {
+            radius = maxCornerRadius;
+          }
         });
       }
     } else {
@@ -76,11 +78,11 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
     super.initState();
     animationController = AnimationController(
       vsync: this,
-      duration: widget.loopDuration,
+      duration: widget.controller.loopDuration,
     );
 
     animationValue = animationController.drive(
-      CurveTween(curve: widget.loopCurve),
+      CurveTween(curve: widget.controller.loopCurve),
     );
 
     animationController.repeat();
@@ -101,6 +103,11 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
   }
 
   void _updateUi() {
+    if (!widget.controller.isLoading) {
+      animationController.stop();
+      return;
+    }
+
     if (mounted) {
       setState(() {
         final edgeH = box.dx - 2 * radius;
@@ -177,7 +184,7 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
   void didUpdateWidget(covariant FlutterAnimateBorder oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (oldWidget.decoratedBox != widget.decoratedBox) {
+    if (oldWidget.controller.hashCode != widget.controller.hashCode) {
       _calculate();
     }
   }
@@ -209,25 +216,37 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
       );
     }
 
-    return CustomPaint(
-      willChange: kDebugMode,
-      foregroundPainter: AnimateBorderPainter(
-        actors: [actor],
-        strokeWidth: thickness,
-        radius: radius,
-        gradient: LinearGradient(
-          colors: widget.colors,
-          stops: widget.colorsStops,
-          tileMode: TileMode.mirror,
-        ),
-      ),
-      child: Container(
-        key: globalKey,
-        padding: widget.padding,
-        alignment: Alignment.center,
-        decoration: widget.decoratedBox,
-        child: widget.child,
-      ),
+    return ListenableBuilder(
+      listenable: Listenable.merge([widget.controller]),
+      builder: (context, _) {
+        if (widget.controller.isLoading && !animationController.isAnimating) {
+          animationController.reset();
+          animationController.repeat();
+        }
+        return CustomPaint(
+          foregroundPainter:
+              widget.controller.isLoading
+                  ? DefaultPainter(
+                    actors: [actor],
+                    strokeWidth: thickness,
+                    radius: radius,
+                    lineExtent: widget.controller.lineExtent,
+                    gradient: LinearGradient(
+                      colors: widget.controller.colors ?? [],
+                      stops: widget.controller.colorsStops ?? [],
+                      tileMode: TileMode.mirror,
+                    ),
+                  )
+                  : null,
+          child: Container(
+            key: globalKey,
+            padding: widget.controller.padding,
+            alignment: Alignment.center,
+            decoration: widget.controller.boxDecoration,
+            child: widget.child,
+          ),
+        );
+      },
     );
   }
 }

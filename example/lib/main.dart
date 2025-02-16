@@ -5,8 +5,22 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final FlutterAnimateBorderController controller1 =
+      FlutterAnimateBorderController();
+  final FlutterAnimateBorderController controller2 =
+      FlutterAnimateBorderController();
+  final FlutterAnimateBorderController controller3 =
+      FlutterAnimateBorderController();
+  final FlutterAnimateBorderController controller4 =
+      FlutterAnimateBorderController();
 
   @override
   Widget build(BuildContext context) {
@@ -25,14 +39,16 @@ class MyApp extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FlutterAnimateBorder(
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-                  decoratedBox: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(50),
-                    border: Border.all(color: Colors.teal.withAlpha(100)),
-                  ),
-                  colors: [Colors.teal, Colors.transparent],
-                  colorsStops: [0.1, 0.5],
+                  controller: controller1
+                    ..setBoxdecoration(BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(50),
+                      border: Border.all(color: Colors.teal.withAlpha(100)),
+                    ))
+                    ..setPadding(
+                        EdgeInsets.symmetric(horizontal: 24, vertical: 4))
+                    ..setColors([Colors.teal, Colors.transparent])
+                    ..setColorsStops([0.1, 0.5]),
                   child: Text(
                     'Button',
                     style: TextStyle(fontSize: 24, color: Colors.white),
@@ -40,14 +56,19 @@ class MyApp extends StatelessWidget {
                 ),
                 SizedBox.square(dimension: 24),
                 FlutterAnimateBorder(
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-                  decoratedBox: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(50),
-                    border: Border.all(color: Colors.teal.withAlpha(100)),
-                  ),
-                  colors: [Colors.red, Colors.green, Colors.blue],
-                  colorsStops: [0, 0.5, 1],
+                  controller: controller2
+                    ..setBoxdecoration(BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(50),
+                      border: Border.all(color: Colors.teal.withAlpha(100)),
+                    ))
+                    ..setPadding(
+                      EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                    )
+                    ..setColors([Colors.red, Colors.green, Colors.blue])
+                    ..setColorsStops(
+                      [0, 0.5, 1],
+                    ),
                   child: Text(
                     'Button',
                     style: TextStyle(fontSize: 24, color: Colors.white),
@@ -60,11 +81,13 @@ class MyApp extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FlutterAnimateBorder(
-                  decoratedBox: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(50),
-                    border: Border.all(color: Colors.teal.withAlpha(100)),
-                  ),
+                  controller: controller3
+                    ..setBoxdecoration(BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.black,
+                      border: Border.all(color: Colors.teal.withAlpha(100)),
+                    ))
+                    ..setLineExtent(20),
                   child: IconButton(
                     onPressed: () {},
                     icon: Icon(
@@ -79,15 +102,21 @@ class MyApp extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                FlutterAnimateBorder(
-                  decoratedBox: BoxDecoration(
-                    color: Colors.black,
-                    border: Border.all(
-                      color: Colors.teal.withAlpha(100),
-                      width: 2,
-                    ),
+                GestureDetector(
+                  onTap: () {
+                    controller4.setLoading(!controller4.isLoading);
+                  },
+                  child: FlutterAnimateBorder(
+                    controller: controller4
+                      ..setBoxdecoration(BoxDecoration(
+                        color: Colors.black,
+                        border: Border.all(
+                          color: Colors.teal.withAlpha(100),
+                          width: 2,
+                        ),
+                      )),
+                    child: Image.network('https://picsum.photos/150'),
                   ),
-                  child: Image.network('https://picsum.photos/150'),
                 ),
               ],
             ),
