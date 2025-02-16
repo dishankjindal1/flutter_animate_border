@@ -2,16 +2,35 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
-class AnimateBorderPainter extends CustomPainter {
+/// [DefaultPainter] is used to draw the line on the perimeter of the
+/// container
+///
+/// [actors] -> You can draw more then one dots #Upcoming feature
+/// [strokeWidth] -> How wide the edge will be
+/// [radius] -> How circular the corners will be
+/// [gradient] -> Colors for the border line, you can pass 2 same colors to make it a single color as Gradient requires at-least 2 colors
+class DefaultPainter extends CustomPainter {
+  /// [actors] -> You can draw more then one dots #Upcoming feature
   final List<Offset> actors;
+
+  /// [strokeWidth] -> How wide the edge will be
   final double strokeWidth;
+
+  /// [radius] -> How circular the corners will be
   final double radius;
+
+  /// [lineExtent] -> how long will be the animating line
+  final double lineExtent;
+
+  /// [gradient] -> Colors for the border line, you can pass 2 same colors to make it a single color as Gradient requires at-least 2 colors
   final Gradient gradient;
 
-  const AnimateBorderPainter({
+  /// Constructor
+  const DefaultPainter({
     required this.actors,
     required this.gradient,
     this.strokeWidth = 1,
+    this.lineExtent = 50,
     this.radius = 0,
   });
 
@@ -23,8 +42,6 @@ class AnimateBorderPainter extends CustomPainter {
       paint.strokeWidth = strokeWidth;
       paint.strokeCap = StrokeCap.round;
       paint.style = PaintingStyle.stroke;
-
-      final extendLine = 50;
 
       final path =
           Path()..addRRect(
@@ -52,8 +69,8 @@ class AnimateBorderPainter extends CustomPainter {
         }
       }
 
-      double startOffset = closestOffset - extendLine;
-      double endOffset = closestOffset + extendLine;
+      double startOffset = closestOffset - lineExtent;
+      double endOffset = closestOffset + lineExtent;
 
       final Path segment = Path();
       if (startOffset < 0) {
@@ -91,7 +108,7 @@ class AnimateBorderPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    if (oldDelegate is AnimateBorderPainter) {
+    if (oldDelegate is DefaultPainter) {
       return oldDelegate.actors != actors;
     }
     return false;

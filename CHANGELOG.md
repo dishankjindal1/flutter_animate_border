@@ -1,4 +1,7 @@
-# Change logs
+## v0.1.0
+
+- Added a controller to customize the ui and behavior.
+- Added start and stop behavior.
 
 ## v0.0.2
 

@@ -10,5 +10,6 @@
 
 ## UPCOMING
 
-- [ ] Controller to stop and start the animation.
-- [ ] Controller to support maximum customization.
+- [x] Controller to stop and start the animation.
+- [x] Add Controller to configure the animation.
+- [ ] Support custom shapes of container.
