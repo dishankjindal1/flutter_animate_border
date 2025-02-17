@@ -1,45 +1,29 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate_border/flutter_animate_border.dart';
 
 /// [DefaultPainter] is used to draw the line on the perimeter of the
 /// container
 ///
 /// [actors] -> You can draw more then one dots #Upcoming feature
-/// [strokeWidth] -> How wide the edge will be
-/// [radius] -> How circular the corners will be
-/// [gradient] -> Colors for the border line, you can pass 2 same colors to make it a single color as Gradient requires at-least 2 colors
+/// [controller] -> contains all the customizable options
 class DefaultPainter extends CustomPainter {
   /// [actors] -> You can draw more then one dots #Upcoming feature
   final List<Offset> actors;
 
-  /// [strokeWidth] -> How wide the edge will be
-  final double strokeWidth;
-
-  /// [radius] -> How circular the corners will be
-  final double radius;
-
-  /// [lineExtent] -> how long will be the animating line
-  final double lineExtent;
-
-  /// [gradient] -> Colors for the border line, you can pass 2 same colors to make it a single color as Gradient requires at-least 2 colors
-  final Gradient gradient;
+  /// [controller] -> contains all the customizable options
+  final FlutterAnimateBorderController controller;
 
   /// Constructor
-  const DefaultPainter({
-    required this.actors,
-    required this.gradient,
-    this.strokeWidth = 1,
-    this.lineExtent = 50,
-    this.radius = 0,
-  });
+  const DefaultPainter({required this.actors, required this.controller});
 
   @override
   void paint(Canvas canvas, Size size) {
     void drawActor(Offset actor) {
       /// Constants
       final paint = ui.Paint();
-      paint.strokeWidth = strokeWidth;
+      paint.strokeWidth = controller.lineThickness;
       paint.strokeCap = StrokeCap.round;
       paint.style = PaintingStyle.stroke;
 
@@ -47,8 +31,8 @@ class DefaultPainter extends CustomPainter {
           Path()..addRRect(
             RRect.fromRectAndRadius(
               Rect.fromLTWH(0, 0, size.width, size.height),
-              Radius.circular(radius),
-            ),
+              Radius.circular(controller.cornerRadius),
+            ).inflate(controller.linePadding / 2),
           );
 
       final metrics = path.computeMetrics().first;
@@ -69,33 +53,31 @@ class DefaultPainter extends CustomPainter {
         }
       }
 
-      double startOffset = closestOffset - lineExtent;
-      double endOffset = closestOffset + lineExtent;
+      double startOffset = closestOffset - controller.lineWidth;
+      double endOffset = closestOffset + controller.lineWidth;
+
+      Offset gapOffset = Offset.zero;
 
       final Path segment = Path();
       if (startOffset < 0) {
         final remaining = totalLength + startOffset;
         final firstPath = metrics.extractPath(remaining, totalLength);
         final secondPath = metrics.extractPath(0, endOffset);
-        segment.addPath(firstPath, Offset.zero);
-        segment.addPath(secondPath, Offset.zero);
+        segment.addPath(firstPath, gapOffset);
+        segment.addPath(secondPath, gapOffset);
       } else if (endOffset > totalLength) {
         final firstPath = metrics.extractPath(startOffset, totalLength);
         final remaining = endOffset - totalLength;
         final secondPath = metrics.extractPath(0, remaining);
-        segment.addPath(firstPath, Offset.zero);
-        segment.addPath(secondPath, Offset.zero);
+        segment.addPath(firstPath, gapOffset);
+        segment.addPath(secondPath, gapOffset);
       } else {
         final path = metrics.extractPath(startOffset, endOffset);
-        segment.addPath(path, Offset.zero);
+        segment.addPath(path, gapOffset);
       }
 
-      //! TODO:@dishank - Find a linear gradient approach
-      paint.shader = ui.Gradient.radial(
-        actor,
-        50,
-        gradient.colors,
-        gradient.stops,
+      paint.shader = controller.gradient!.createShader(
+        Rect.fromCenter(center: actor, width: size.width, height: size.height),
       );
 
       canvas.drawPath(segment, paint);
@@ -108,9 +90,6 @@ class DefaultPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    if (oldDelegate is DefaultPainter) {
-      return oldDelegate.actors != actors;
-    }
-    return false;
+    return true;
   }
 }
