@@ -1,3 +1,7 @@
+## v0.2.1
+
+- Updated docs
+
 ## v0.2.0
 
 - Removed the padding and decoration.
