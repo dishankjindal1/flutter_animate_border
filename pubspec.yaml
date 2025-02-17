@@ -1,6 +1,6 @@
 name: flutter_animate_border
 description: "This is simple package to wrap around your existing widget to animate border. i.e Loading state"
-version: 0.2.0
+version: 0.2.1
 homepage: https://github.com/dishankjindal1/flutter_animate_border
 
 environment:
