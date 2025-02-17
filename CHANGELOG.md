@@ -1,3 +1,10 @@
+## v0.2.0
+
+- Removed the padding and decoration.
+- Added gradient.
+- Added linePadding.
+- Added new example and screenshot.
+
 ## v0.1.0
 
 - Added a controller to customize the ui and behavior.

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate_border/src/controller/controller.dart';
 import 'package:flutter_animate_border/src/painters/default_painter.dart';
 
-/// [FlutterAnimateBorder] is the main widget which wrap around your content, it acts as a [Container] so you dont need to pass your own [Container] as a child. Instead pass the [DecoratedBox] and [Padding] property to the controller [FlutterAnimateBorderController]
+/// [FlutterAnimateBorder] is the main widget which wrap around your content. Control your animation via [FlutterAnimateBorderController]
 class FlutterAnimateBorder extends StatefulWidget {
   /// constructor
   const FlutterAnimateBorder({
@@ -28,6 +28,7 @@ class FlutterAnimateBorder extends StatefulWidget {
 class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
     with SingleTickerProviderStateMixin {
   /// Mutable
+
   Offset actor = Offset(0, 0);
   Offset box = Offset(0, 0);
   double radius = 0;
@@ -49,23 +50,13 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
       if (mounted) {
         setState(() {
           box = Offset(renderBox.size.width, renderBox.size.height);
-          gradient = widget.controller.boxDecoration?.gradient;
-          thickness =
-              widget.controller.boxDecoration?.border?.bottom.width ??
-              thickness;
-          radius =
-              (widget.controller.boxDecoration?.borderRadius as BorderRadius?)
-                  ?.bottomLeft
-                  .x ??
-              0;
+          gradient = widget.controller.gradient;
+          thickness = widget.controller.lineThickness;
+          radius = widget.controller.cornerRadius;
           final findTheMinSize = math.min(box.dx, box.dy);
           final maxCornerRadius = findTheMinSize / 2;
           final pickMinCornerRadius = math.min(radius, maxCornerRadius);
           radius = pickMinCornerRadius;
-
-          if (widget.controller.boxDecoration?.shape == BoxShape.circle) {
-            radius = maxCornerRadius;
-          }
         });
       }
     } else {
@@ -94,7 +85,13 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
   }
 
   // Helper function to calculate arc points
-  Offset arcPoint(double cx, double cy, double startAngle, double angle) {
+  Offset arcPoint(
+    double cx,
+    double cy,
+    double startAngle,
+    double angle,
+    double radius,
+  ) {
     final x = cx + radius * math.cos(startAngle + angle);
 
     final y = cy + radius * math.sin(startAngle + angle);
@@ -103,75 +100,126 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
   }
 
   void _updateUi() {
-    if (!widget.controller.isLoading) {
+    if (!widget.controller.isRunning) {
       animationController.stop();
       return;
     }
 
     if (mounted) {
       setState(() {
-        final edgeH = box.dx - 2 * radius;
-        final edgeV = box.dy - 2 * radius;
-        final arc = (math.pi / 2) * radius;
+        final adjustedWidth =
+            (box.dx + 2 * widget.controller.linePadding)
+                .clamp(0, double.infinity)
+                .toDouble();
+        final adjustedHeight =
+            (box.dy + 2 * widget.controller.linePadding)
+                .clamp(0, double.infinity)
+                .toDouble();
+        final adjustedRadius =
+            radius > adjustedWidth / 2 || radius > adjustedHeight / 2
+                ? math.min(adjustedWidth / 2, adjustedHeight / 2)
+                : radius;
+
+        final edgeH = (adjustedWidth - 2 * adjustedRadius);
+        final edgeV = (adjustedHeight - 2 * adjustedRadius);
+        final arc = ((math.pi / 2) * adjustedRadius);
         final perimeter = 2 * (edgeH + edgeV) + 4 * arc;
 
         double d = perimeter * animationValue.value;
 
+        // Offset actor position by padding
+        final paddingOffset = widget.controller.linePaddingOffset;
+
         if (d < edgeH) {
-          actor = Offset(d + radius, 0);
+          actor = Offset(d + adjustedRadius, 0) + paddingOffset;
           return;
         }
 
         d -= edgeH;
 
         if (d < arc) {
-          final angle = d / radius;
-          actor = arcPoint(box.dx - radius, radius, 3 * math.pi / 2, angle);
+          final angle = d / adjustedRadius;
+          actor =
+              arcPoint(
+                adjustedWidth - adjustedRadius,
+                adjustedRadius,
+                3 * math.pi / 2,
+                angle,
+                adjustedRadius,
+              ) +
+              paddingOffset;
           return;
         }
 
         d -= arc;
 
         if (d < edgeV) {
-          actor = Offset(box.dx, d + radius);
+          actor = Offset(adjustedWidth, d + adjustedRadius) + paddingOffset;
           return;
         }
 
         d -= edgeV;
 
         if (d < arc) {
-          final angle = d / radius;
-          actor = arcPoint(box.dx - radius, box.dy - radius, 0, angle);
+          final angle = d / adjustedRadius;
+          actor =
+              arcPoint(
+                adjustedWidth - adjustedRadius,
+                adjustedHeight - adjustedRadius,
+                0,
+                angle,
+                adjustedRadius,
+              ) +
+              paddingOffset;
           return;
         }
 
         d -= arc;
 
         if (d < edgeH) {
-          actor = Offset(box.dx - d - radius, box.dy);
+          actor =
+              Offset(adjustedWidth - d - adjustedRadius, adjustedHeight) +
+              paddingOffset;
           return;
         }
 
         d -= edgeH;
 
         if (d < arc) {
-          final angle = d / radius;
-          actor = arcPoint(radius, box.dy - radius, math.pi / 2, angle);
+          final angle = d / adjustedRadius;
+          actor =
+              arcPoint(
+                adjustedRadius,
+                adjustedHeight - adjustedRadius,
+                math.pi / 2,
+                angle,
+                adjustedRadius,
+              ) +
+              paddingOffset;
           return;
         }
 
         d -= arc;
 
         if (d < edgeV) {
-          actor = Offset(0, box.dy - d - radius);
+          actor =
+              Offset(0, adjustedHeight - d - adjustedRadius) + paddingOffset;
           return;
         }
 
         d -= edgeV;
 
         if (d < arc) {
-          final angle = d / radius;
-          actor = arcPoint(radius, radius, math.pi, angle);
+          final angle = d / adjustedRadius;
+          actor =
+              arcPoint(
+                adjustedRadius,
+                adjustedRadius,
+                math.pi,
+                angle,
+                adjustedRadius,
+              ) +
+              paddingOffset;
           return;
         }
 
@@ -219,30 +267,21 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
     return ListenableBuilder(
       listenable: Listenable.merge([widget.controller]),
       builder: (context, _) {
-        if (widget.controller.isLoading && !animationController.isAnimating) {
+        if (widget.controller.isRunning && !animationController.isAnimating) {
           animationController.reset();
           animationController.repeat();
         }
         return CustomPaint(
           foregroundPainter:
-              widget.controller.isLoading
+              widget.controller.isRunning
                   ? DefaultPainter(
                     actors: [actor],
-                    strokeWidth: thickness,
-                    radius: radius,
-                    lineExtent: widget.controller.lineExtent,
-                    gradient: LinearGradient(
-                      colors: widget.controller.colors ?? [],
-                      stops: widget.controller.colorsStops ?? [],
-                      tileMode: TileMode.mirror,
-                    ),
+                    controller: widget.controller,
                   )
                   : null,
-          child: Container(
+          child: Align(
             key: globalKey,
-            padding: widget.controller.padding,
             alignment: Alignment.center,
-            decoration: widget.controller.boxDecoration,
             child: widget.child,
           ),
         );

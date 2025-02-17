@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate_border/flutter_animate_border.dart';
 
+import 'package:gap/gap.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -13,13 +15,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final FlutterAnimateBorderController controller1 =
-      FlutterAnimateBorderController();
-  final FlutterAnimateBorderController controller2 =
-      FlutterAnimateBorderController();
-  final FlutterAnimateBorderController controller3 =
-      FlutterAnimateBorderController();
-  final FlutterAnimateBorderController controller4 =
+  final FlutterAnimateBorderController controller =
       FlutterAnimateBorderController();
 
   @override
@@ -38,59 +34,198 @@ class _MyAppState extends State<MyApp> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                FlutterAnimateBorder(
-                  controller: controller1
-                    ..setBoxdecoration(BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(50),
-                      border: Border.all(color: Colors.teal.withAlpha(100)),
-                    ))
-                    ..setPadding(
-                        EdgeInsets.symmetric(horizontal: 24, vertical: 4))
-                    ..setColors([Colors.teal, Colors.transparent])
-                    ..setColorsStops([0.1, 0.5]),
-                  child: Text(
-                    'Button',
-                    style: TextStyle(fontSize: 24, color: Colors.white),
+                GestureDetector(
+                  onTap: () {
+                    controller.setRunning(!controller.isRunning);
+                  },
+                  child: FlutterAnimateBorder(
+                    controller: controller
+                      ..setGradient(
+                        RadialGradient(
+                          radius: 1,
+                          colors: [
+                            Colors.teal,
+                            Colors.transparent,
+                          ],
+                        ),
+                      )
+                      ..setLineThickness(2)
+                      ..setLineWidth(48)
+                      ..setLinePadding(0)
+                      ..setCornerRadius(40),
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(40),
+                      ),
+                      child: Text(
+                        'Container 1',
+                        style: TextStyle(fontSize: 24, color: Colors.white),
+                      ),
+                    ),
                   ),
                 ),
-                SizedBox.square(dimension: 24),
+                Gap(24),
                 FlutterAnimateBorder(
-                  controller: controller2
-                    ..setBoxdecoration(BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(50),
-                      border: Border.all(color: Colors.teal.withAlpha(100)),
-                    ))
-                    ..setPadding(
-                      EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                  controller: FlutterAnimateBorderController()
+                    ..setGradient(
+                      RadialGradient(
+                        radius: 1,
+                        colors: [
+                          Colors.teal,
+                          Colors.transparent,
+                        ],
+                      ),
                     )
-                    ..setColors([Colors.red, Colors.green, Colors.blue])
-                    ..setColorsStops(
-                      [0, 0.5, 1],
+                    ..setLineThickness(2)
+                    ..setLineWidth(48)
+                    ..setLinePadding(0)
+                    ..setCornerRadius(40),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                    decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(
+                          40,
+                        ),
+                        border: Border.all(
+                            width: 2, color: Colors.teal.withAlpha(50))),
+                    child: Text(
+                      'Container 2',
+                      style: TextStyle(fontSize: 24, color: Colors.white),
                     ),
-                  child: Text(
-                    'Button',
-                    style: TextStyle(fontSize: 24, color: Colors.white),
                   ),
                 ),
               ],
             ),
-            SizedBox.square(dimension: 24),
+            Gap(24),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FlutterAnimateBorder(
-                  controller: controller3
-                    ..setBoxdecoration(BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.black,
-                      border: Border.all(color: Colors.teal.withAlpha(100)),
-                    ))
-                    ..setLineExtent(20),
-                  child: IconButton(
+                  controller: FlutterAnimateBorderController()
+                    ..setGradient(
+                      RadialGradient(
+                        radius: 1,
+                        colors: [
+                          Colors.teal,
+                          Colors.transparent,
+                        ],
+                      ),
+                    )
+                    ..setLineThickness(2)
+                    ..setLineWidth(48)
+                    ..setLinePadding(0)
+                    ..setCornerRadius(40),
+                  child: ElevatedButton(
                     onPressed: () {},
-                    icon: Icon(
+                    style: ButtonStyle(
+                      padding: WidgetStatePropertyAll(
+                          EdgeInsets.symmetric(horizontal: 24, vertical: 4)),
+                      backgroundColor: WidgetStatePropertyAll(Colors.black),
+                      shape: WidgetStatePropertyAll(
+                        RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(40)),
+                      ),
+                    ),
+                    child: Text(
+                      'Button 1',
+                      style: TextStyle(fontSize: 24, color: Colors.white),
+                    ),
+                  ),
+                ),
+                Gap(24),
+                FlutterAnimateBorder(
+                  controller: FlutterAnimateBorderController()
+                    ..setGradient(
+                      LinearGradient(
+                        colors: [
+                          Colors.red,
+                          Colors.green,
+                          Colors.blue,
+                        ],
+                      ),
+                    )
+                    ..setLineThickness(1)
+                    ..setLineWidth(24)
+                    ..setLinePadding(-1)
+                    ..setCornerRadius(40),
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ButtonStyle(
+                      padding: WidgetStatePropertyAll(
+                          EdgeInsets.symmetric(horizontal: 24, vertical: 4)),
+                      backgroundColor: WidgetStatePropertyAll(Colors.black),
+                      shape: WidgetStatePropertyAll(
+                        RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(40),
+                            side: BorderSide(width: 1, color: Colors.black)),
+                      ),
+                    ),
+                    child: Text(
+                      'Button 2',
+                      style: TextStyle(fontSize: 24, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Gap(24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FlutterAnimateBorder(
+                  controller: FlutterAnimateBorderController()
+                    ..setGradient(
+                      RadialGradient(
+                        radius: 1,
+                        colors: [
+                          Colors.teal,
+                          Colors.teal,
+                        ],
+                      ),
+                    )
+                    ..setLineThickness(4)
+                    ..setLineWidth(24)
+                    ..setLinePadding(20)
+                    ..setCornerRadius(40),
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(40),
+                    ),
+                    child: Icon(
+                      Icons.share,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                Gap(24),
+                FlutterAnimateBorder(
+                  controller: FlutterAnimateBorderController()
+                    ..setGradient(
+                      LinearGradient(
+                        colors: [
+                          Colors.red,
+                          Colors.green,
+                          Colors.blue,
+                        ],
+                      ),
+                    )
+                    ..setLineThickness(4)
+                    ..setLineWidth(30)
+                    ..setLinePadding(-20)
+                    ..setCornerRadius(40),
+                  child: Container(
+                    padding: EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(40),
+                    ),
+                    child: Icon(
                       Icons.share,
                       color: Colors.white,
                     ),
@@ -98,25 +233,59 @@ class _MyAppState extends State<MyApp> {
                 ),
               ],
             ),
-            SizedBox.square(dimension: 24),
+            Gap(24),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                GestureDetector(
-                  onTap: () {
-                    controller4.setLoading(!controller4.isLoading);
-                  },
-                  child: FlutterAnimateBorder(
-                    controller: controller4
-                      ..setBoxdecoration(BoxDecoration(
-                        color: Colors.black,
-                        border: Border.all(
-                          color: Colors.teal.withAlpha(100),
-                          width: 2,
-                        ),
-                      )),
-                    child: Image.network('https://picsum.photos/150'),
-                  ),
+                FlutterAnimateBorder(
+                  controller: FlutterAnimateBorderController()
+                    ..setGradient(
+                      LinearGradient(
+                        colors: [
+                          Colors.red,
+                          Colors.green,
+                          Colors.blue,
+                        ],
+                      ),
+                    )
+                    ..setLineThickness(4)
+                    ..setLineWidth(30)
+                    ..setLinePadding(-20),
+                  child: Image.network('https://picsum.photos/150'),
+                ),
+                Gap(24),
+                FlutterAnimateBorder(
+                  controller: FlutterAnimateBorderController()
+                    ..setGradient(
+                      LinearGradient(
+                        colors: [
+                          Colors.red,
+                          Colors.green,
+                          Colors.blue,
+                        ],
+                      ),
+                    )
+                    ..setLineThickness(4)
+                    ..setLineWidth(30)
+                    ..setLinePadding(0),
+                  child: Image.network('https://picsum.photos/150'),
+                ),
+                Gap(24),
+                FlutterAnimateBorder(
+                  controller: FlutterAnimateBorderController()
+                    ..setGradient(
+                      LinearGradient(
+                        colors: [
+                          Colors.red,
+                          Colors.green,
+                          Colors.blue,
+                        ],
+                      ),
+                    )
+                    ..setLineThickness(4)
+                    ..setLineWidth(30)
+                    ..setLinePadding(20),
+                  child: Image.network('https://picsum.photos/150'),
                 ),
               ],
             ),

@@ -4,11 +4,8 @@ import 'package:flutter/material.dart';
 ///
 /// [loopDuration] -> is while animation duration
 /// [loopCurve] -> is to determine how the value on animation will change with respect to time
-/// [boxDecoration] -> is used to determine the [Decoration] of the underline container
-/// [padding] -> is used to determine the [Padding] of the container
-/// [colors] -> is used to determine the colors
-/// [colorsStops] -> is used to determine the proportions of the [colors] range
-/// [isLoading] -> is used to start/stop the animation
+/// [gradient] -> is used to determine the [Gradient] of the animating border
+/// [isRunning] -> is used to start/stop the animation
 class FlutterAnimateBorderController extends ChangeNotifier {
   /// [FlutterAnimateBorderController] is used to initialize the controller with [loopDuration] and [loopCurve]
   /// as this are required.
@@ -17,75 +14,78 @@ class FlutterAnimateBorderController extends ChangeNotifier {
     this.loopCurve = Curves.linear,
   });
 
-  /// [loopDuration] -> is while animation duration
+  /// determine how long will be the whole animation duration cycle
   final Duration loopDuration;
 
-  /// [loopCurve] -> is to determine how the value on animation will change with respect to time
+  /// determine how the value on animation will change with respect to time
   final Curve loopCurve;
 
-  BoxDecoration? _boxDecoration;
+  Gradient? _gradient;
 
-  /// [boxDecoration] -> is used to determine the [BoxDecoration] of the underline container
-  BoxDecoration? get boxDecoration => _boxDecoration;
+  /// used to determine the gradient of the animating border
+  Gradient? get gradient => _gradient;
 
-  /// [setBoxdecoration] -> is used to set the [BoxDecoration] of the underline container
-  void setBoxdecoration(BoxDecoration value) {
-    _boxDecoration = value;
+  /// set the gradient of the animating border
+  void setGradient(Gradient value) {
+    _gradient = value;
     notifyListeners();
   }
 
-  EdgeInsetsGeometry? _padding;
+  double _lineThickness = 1.0;
 
-  /// [padding] -> is used to determine the [Padding] of the container
-  EdgeInsetsGeometry? get padding => _padding;
+  /// used to determine the thickness of the animating border
+  double get lineThickness => _lineThickness;
 
-  /// [setPadding] -> is used to set the [Padding] of the container
-  void setPadding(EdgeInsetsGeometry value) {
-    _padding = value;
+  /// set the thickness of the animating border
+  void setLineThickness(double value) {
+    _lineThickness = value;
     notifyListeners();
   }
 
-  List<Color>? _colors = [Colors.teal, Colors.teal];
+  double _cornerRadius = 0;
 
-  /// [colors] -> is used to determine the colors
-  List<Color>? get colors => _colors;
+  /// used to determine the corner radius of the animating border
+  double get cornerRadius => _cornerRadius;
 
-  /// [colors] -> is used to set the colors
-  void setColors(List<Color> value) {
-    _colors = value;
+  /// set the corner radius of the animating border
+  void setCornerRadius(double value) {
+    _cornerRadius = value;
     notifyListeners();
   }
 
-  List<double>? _colorsStops = [0, 1];
+  double _lineWidth = 50.0;
 
-  /// [colorsStops] -> is used to determine the proportions of the [colors] range
-  List<double>? get colorsStops => _colorsStops;
+  /// [lineWidth] -> is used to determine the length of the animation line range
+  double get lineWidth => _lineWidth;
 
-  /// [setColorsStops] -> is used to set the proportions of the [colors] range
-  void setColorsStops(List<double> value) {
-    _colorsStops = value;
+  /// [setLineWidth] -> is used to set the length of the animation line range
+  void setLineWidth(double value) {
+    _lineWidth = value;
     notifyListeners();
   }
 
-  double _lineExtent = 50.0;
+  double _linePadding = 0;
 
-  /// [lineExtent] -> is used to determine the length of the animation line range
-  double get lineExtent => _lineExtent;
+  /// line padding offset to determine the anchor
+  Offset get linePaddingOffset => Offset(-_linePadding, -_linePadding);
 
-  /// [setLineExtent] -> is used to set the length of the animation line range
-  void setLineExtent(double value) {
-    _lineExtent = value;
+  /// used to determine line padding of the border. It helps position the animation inward(negative values) or outward(positive values)
+  double get linePadding => _linePadding;
+
+  /// set the line padding to determine the offset inward(negative values) or outward(positive values)
+  void setLinePadding(double value) {
+    _linePadding = value;
     notifyListeners();
   }
 
-  bool _isLoading = true;
+  bool _isRunning = true;
 
   /// Get the info of loading if [true] then it is running, and [false] it is stopped
-  bool get isLoading => _isLoading;
+  bool get isRunning => _isRunning;
 
   /// Used to set start[true] and stop[false] the border loading
-  void setLoading(bool value) {
-    _isLoading = value;
+  void setRunning(bool value) {
+    _isRunning = value;
     notifyListeners();
   }
 }
