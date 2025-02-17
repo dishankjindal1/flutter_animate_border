@@ -1,15 +1,3 @@
-## v1.0.0
-
-- Breaking changes, please check out the example code
-
-## v0.2.3
-
-- BugFix - Animation controller ticker leak
-
-## v0.2.2
-
-- BugFix - Animation controller ticker leak
-
 ## v0.2.1
 
 - Updated docs
