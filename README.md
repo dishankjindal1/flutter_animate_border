@@ -18,7 +18,9 @@
 
 ## UPCOMING
 
-- [ ] Add progress bar support
+- [x] Controller to stop and start the animation.
+- [x] Add Controller to configure the animation.
+- [x] Border thickness control
 - [ ] Support custom shapes of container.
 - [ ] Widget should be able run without a controller with default values
 - [ ] More Customizations
