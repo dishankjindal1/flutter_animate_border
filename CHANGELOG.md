@@ -1,3 +1,7 @@
+## v0.2.3
+
+- BugFix - Animation controller ticker leak
+
 ## v0.2.2
 
 - BugFix - Animation controller ticker leak
