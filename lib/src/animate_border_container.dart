@@ -81,6 +81,7 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _calculate();
       animationController.addListener(_updateUi);
+      animationController.addStatusListener(_updateState);
     });
   }
 
@@ -99,14 +100,26 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
     return Offset(x, y);
   }
 
-  void _updateUi() {
-    if (!widget.controller.isRunning) {
-      animationController.stop();
-      return;
+  void _updateState(AnimationStatus status) {
+    if (widget.controller.isRunning && !animationController.isAnimating) {
+      animationController.reset();
+      animationController.repeat();
     }
+  }
 
+  void _updateUi() {
     if (mounted) {
       setState(() {
+        if (widget.controller.isRunning && !animationController.isAnimating) {
+          animationController.reset();
+          animationController.repeat();
+        }
+
+        if (!widget.controller.isRunning) {
+          animationController.stop();
+          return;
+        }
+
         final adjustedWidth =
             (box.dx + 2 * widget.controller.linePadding)
                 .clamp(0, double.infinity)
@@ -246,6 +259,7 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
   @override
   void dispose() {
     animationController.removeListener(_updateUi);
+    animationController.removeStatusListener(_updateState);
     animationController.dispose();
     super.dispose();
   }
@@ -266,26 +280,21 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
 
     return ListenableBuilder(
       listenable: Listenable.merge([widget.controller]),
-      builder: (context, _) {
-        if (widget.controller.isRunning && !animationController.isAnimating) {
-          animationController.reset();
-          animationController.repeat();
-        }
-        return CustomPaint(
-          foregroundPainter:
-              widget.controller.isRunning
-                  ? DefaultPainter(
-                    actors: [actor],
-                    controller: widget.controller,
-                  )
-                  : null,
-          child: Align(
-            key: globalKey,
-            alignment: Alignment.center,
-            child: widget.child,
+      builder:
+          (context, _) => CustomPaint(
+            foregroundPainter:
+                widget.controller.isRunning
+                    ? DefaultPainter(
+                      actors: [actor],
+                      controller: widget.controller,
+                    )
+                    : null,
+            child: Align(
+              key: globalKey,
+              alignment: Alignment.center,
+              child: widget.child,
+            ),
           ),
-        );
-      },
     );
   }
 }
