@@ -11,6 +11,12 @@ class FlutterAnimateBorder extends StatefulWidget {
   const FlutterAnimateBorder({
     required this.controller,
     required this.child,
+    this.color = Colors.black,
+    this.cornerRadius = 0,
+    this.lineThickness = 1.0,
+    this.lineWidth = 50.0,
+    this.linePadding = 0,
+    this.gradient,
     super.key,
   });
 
@@ -18,11 +24,32 @@ class FlutterAnimateBorder extends StatefulWidget {
   /// widget.
   final FlutterAnimateBorderController controller;
 
+  /// [color] -> is used to determine the defaut [Gradient] of the animating border
+  final Color color;
+
+  /// used to determine the corner radius of the animating border
+  final double cornerRadius;
+
+  /// used to determine the thickness of the animating border
+  final double lineThickness;
+
+  /// [lineWidth] -> is used to determine the length of the animation line range
+  final double lineWidth;
+
+  /// [linePadding] -> line padding offset to determine the anchor
+  final double linePadding;
+
+  /// [gradient] -> is used to determine the [Gradient] of the animating border
+  final Gradient? gradient;
+
   /// Pass your [Text] widget or [Image] widget to it
   final Widget child;
 
   @override
   State<FlutterAnimateBorder> createState() => _FlutterAnimateBorderState();
+
+  /// [linePaddingOffset] -> line padding offset to determine the anchor
+  Offset get linePaddingOffset => Offset(-linePadding, -linePadding);
 }
 
 class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
@@ -32,8 +59,6 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
   Offset actor = Offset(0, 0);
   Offset box = Offset(0, 0);
   double radius = 0;
-  double thickness = 0;
-  Gradient? gradient;
 
   /// Immutable
   final globalKey = GlobalKey();
@@ -43,25 +68,20 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
   late final Animation<double> animationValue;
 
   void _calculate() {
-    final renderBox =
-        globalKey.currentContext?.findRenderObject() as RenderBox?;
-
-    if (renderBox != null) {
+    scheduleMicrotask(() {
       if (mounted) {
+        final renderBox =
+            globalKey.currentContext!.findRenderObject() as RenderBox;
         setState(() {
           box = Offset(renderBox.size.width, renderBox.size.height);
-          gradient = widget.controller.gradient;
-          thickness = widget.controller.lineThickness;
-          radius = widget.controller.cornerRadius;
+          radius = widget.cornerRadius;
           final findTheMinSize = math.min(box.dx, box.dy);
           final maxCornerRadius = findTheMinSize / 2;
           final pickMinCornerRadius = math.min(radius, maxCornerRadius);
           radius = pickMinCornerRadius;
         });
       }
-    } else {
-      scheduleMicrotask(_calculate);
-    }
+    });
   }
 
   @override
@@ -102,17 +122,17 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
   void _updateUi() {
     if (mounted) {
       setState(() {
-        if (!widget.controller.isRunning) {
+        if (!widget.controller.isLoading) {
           animationController.stop();
           return;
         }
 
         final adjustedWidth =
-            (box.dx + 2 * widget.controller.linePadding)
+            (box.dx + 2 * widget.linePadding)
                 .clamp(0, double.infinity)
                 .toDouble();
         final adjustedHeight =
-            (box.dy + 2 * widget.controller.linePadding)
+            (box.dy + 2 * widget.linePadding)
                 .clamp(0, double.infinity)
                 .toDouble();
         final adjustedRadius =
@@ -128,7 +148,7 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
         double d = perimeter * animationValue.value;
 
         // Offset actor position by padding
-        final paddingOffset = widget.controller.linePaddingOffset;
+        final paddingOffset = widget.linePaddingOffset;
 
         if (d < edgeH) {
           actor = Offset(d + adjustedRadius, 0) + paddingOffset;
@@ -232,7 +252,7 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
   void didUpdateWidget(covariant FlutterAnimateBorder oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (oldWidget.controller.hashCode != widget.controller.hashCode) {
+    if (oldWidget.hashCode != widget.hashCode) {
       _calculate();
     }
   }
@@ -258,35 +278,36 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
       final renderBox =
           globalKey.currentContext?.findRenderObject() as RenderBox?;
 
-      box = Offset(
-        renderBox?.size.width ?? box.dx,
-        renderBox?.size.height ?? box.dy,
-      );
+      box =
+          Offset(
+            renderBox?.size.width ?? box.dx,
+            renderBox?.size.height ?? box.dy,
+          ) +
+          widget.linePaddingOffset +
+          widget.linePaddingOffset;
+      _calculate();
     }
 
-    return ListenableBuilder(
-      listenable: Listenable.merge([widget.controller]),
-      builder: (context, _) {
-        if (widget.controller.isRunning && !animationController.isAnimating) {
-          animationController.reset();
-          animationController.repeat();
-        }
+    if (widget.controller.isLoading && !animationController.isAnimating) {
+      animationController.reset();
+      animationController.repeat();
+    }
+    final defaultGradient = LinearGradient(
+      colors: [widget.color, widget.color],
+    );
 
-        return CustomPaint(
-          foregroundPainter:
-              widget.controller.isRunning
-                  ? DefaultPainter(
-                    actors: [actor],
-                    controller: widget.controller,
-                  )
-                  : null,
-          child: Align(
-            key: globalKey,
-            alignment: Alignment.center,
-            child: widget.child,
-          ),
-        );
-      },
+    return CustomPaint(
+      key: globalKey,
+      foregroundPainter: DefaultPainter(
+        widget.controller.isLoading,
+        actors: [actor],
+        cornerRadius: radius,
+        lineThickness: widget.lineThickness,
+        lineWidth: widget.lineWidth,
+        linePadding: widget.linePadding,
+        gradient: widget.gradient ?? defaultGradient,
+      ),
+      child: widget.child,
     );
   }
 }

@@ -36,55 +36,53 @@ class _MyAppState extends State<MyApp> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    controller.setRunning(!controller.isRunning);
+                    setState(() {
+                      controller.isLoading = !controller.isLoading;
+                    });
                   },
                   child: FlutterAnimateBorder(
-                    controller: controller
-                      ..setGradient(
-                        RadialGradient(
-                          radius: 1,
-                          colors: [
-                            Colors.teal,
-                            Colors.transparent,
-                          ],
-                        ),
-                      )
-                      ..setLineThickness(2)
-                      ..setLineWidth(48)
-                      ..setLinePadding(0)
-                      ..setCornerRadius(40),
+                    controller: controller,
+                    lineThickness: 2,
+                    lineWidth: 48,
+                    linePadding: 0,
+                    cornerRadius: 40,
+                    gradient: RadialGradient(
+                      radius: 1,
+                      colors: [
+                        Colors.teal,
+                        Colors.transparent,
+                      ],
+                    ),
                     child: Container(
                       padding:
-                          EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                          EdgeInsets.symmetric(horizontal: 18, vertical: 4),
                       decoration: BoxDecoration(
                         color: Colors.black,
                         borderRadius: BorderRadius.circular(40),
                       ),
                       child: Text(
                         'Container 1',
-                        style: TextStyle(fontSize: 24, color: Colors.white),
+                        style: TextStyle(fontSize: 18, color: Colors.white),
                       ),
                     ),
                   ),
                 ),
-                Gap(24),
+                Gap(18),
                 FlutterAnimateBorder(
-                  controller: FlutterAnimateBorderController()
-                    ..setGradient(
-                      RadialGradient(
-                        radius: 1,
-                        colors: [
-                          Colors.teal,
-                          Colors.transparent,
-                        ],
-                      ),
-                    )
-                    ..setLineThickness(2)
-                    ..setLineWidth(48)
-                    ..setLinePadding(0)
-                    ..setCornerRadius(40),
+                  controller: FlutterAnimateBorderController(),
+                  lineThickness: 2,
+                  lineWidth: 48,
+                  linePadding: 0,
+                  cornerRadius: 40,
+                  gradient: RadialGradient(
+                    radius: 1,
+                    colors: [
+                      Colors.teal,
+                      Colors.transparent,
+                    ],
+                  ),
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                    padding: EdgeInsets.symmetric(horizontal: 18, vertical: 4),
                     decoration: BoxDecoration(
                         color: Colors.black,
                         borderRadius: BorderRadius.circular(
@@ -94,36 +92,34 @@ class _MyAppState extends State<MyApp> {
                             width: 2, color: Colors.teal.withAlpha(50))),
                     child: Text(
                       'Container 2',
-                      style: TextStyle(fontSize: 24, color: Colors.white),
+                      style: TextStyle(fontSize: 18, color: Colors.white),
                     ),
                   ),
                 ),
               ],
             ),
-            Gap(24),
+            Gap(18),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FlutterAnimateBorder(
-                  controller: FlutterAnimateBorderController()
-                    ..setGradient(
-                      RadialGradient(
-                        radius: 1,
-                        colors: [
-                          Colors.teal,
-                          Colors.transparent,
-                        ],
-                      ),
-                    )
-                    ..setLineThickness(2)
-                    ..setLineWidth(48)
-                    ..setLinePadding(0)
-                    ..setCornerRadius(40),
+                  controller: FlutterAnimateBorderController(),
+                  lineThickness: 2,
+                  lineWidth: 48,
+                  linePadding: 0,
+                  cornerRadius: 40,
+                  gradient: RadialGradient(
+                    radius: 1,
+                    colors: [
+                      Colors.teal,
+                      Colors.transparent,
+                    ],
+                  ),
                   child: ElevatedButton(
                     onPressed: () {},
                     style: ButtonStyle(
                       padding: WidgetStatePropertyAll(
-                          EdgeInsets.symmetric(horizontal: 24, vertical: 4)),
+                          EdgeInsets.symmetric(horizontal: 18, vertical: 4)),
                       backgroundColor: WidgetStatePropertyAll(Colors.black),
                       shape: WidgetStatePropertyAll(
                         RoundedRectangleBorder(
@@ -132,31 +128,29 @@ class _MyAppState extends State<MyApp> {
                     ),
                     child: Text(
                       'Button 1',
-                      style: TextStyle(fontSize: 24, color: Colors.white),
+                      style: TextStyle(fontSize: 18, color: Colors.white),
                     ),
                   ),
                 ),
-                Gap(24),
+                Gap(18),
                 FlutterAnimateBorder(
-                  controller: FlutterAnimateBorderController()
-                    ..setGradient(
-                      LinearGradient(
-                        colors: [
-                          Colors.red,
-                          Colors.green,
-                          Colors.blue,
-                        ],
-                      ),
-                    )
-                    ..setLineThickness(1)
-                    ..setLineWidth(24)
-                    ..setLinePadding(-1)
-                    ..setCornerRadius(40),
+                  controller: FlutterAnimateBorderController(),
+                  lineThickness: 1,
+                  lineWidth: 18,
+                  linePadding: -1,
+                  cornerRadius: 40,
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.red,
+                      Colors.green,
+                      Colors.blue,
+                    ],
+                  ),
                   child: ElevatedButton(
                     onPressed: () {},
                     style: ButtonStyle(
                       padding: WidgetStatePropertyAll(
-                          EdgeInsets.symmetric(horizontal: 24, vertical: 4)),
+                          EdgeInsets.symmetric(horizontal: 18, vertical: 4)),
                       backgroundColor: WidgetStatePropertyAll(Colors.black),
                       shape: WidgetStatePropertyAll(
                         RoundedRectangleBorder(
@@ -166,31 +160,29 @@ class _MyAppState extends State<MyApp> {
                     ),
                     child: Text(
                       'Button 2',
-                      style: TextStyle(fontSize: 24, color: Colors.white),
+                      style: TextStyle(fontSize: 18, color: Colors.white),
                     ),
                   ),
                 ),
               ],
             ),
-            Gap(24),
+            Gap(18),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FlutterAnimateBorder(
-                  controller: FlutterAnimateBorderController()
-                    ..setGradient(
-                      RadialGradient(
-                        radius: 1,
-                        colors: [
-                          Colors.teal,
-                          Colors.teal,
-                        ],
-                      ),
-                    )
-                    ..setLineThickness(4)
-                    ..setLineWidth(24)
-                    ..setLinePadding(20)
-                    ..setCornerRadius(40),
+                  controller: FlutterAnimateBorderController(),
+                  lineThickness: 4,
+                  lineWidth: 18,
+                  linePadding: 20,
+                  cornerRadius: 40,
+                  gradient: RadialGradient(
+                    radius: 1,
+                    colors: [
+                      Colors.teal,
+                      Colors.teal,
+                    ],
+                  ),
                   child: Container(
                     padding: EdgeInsets.all(8),
                     decoration: BoxDecoration(
@@ -203,24 +195,22 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ),
                 ),
-                Gap(24),
+                Gap(18),
                 FlutterAnimateBorder(
-                  controller: FlutterAnimateBorderController()
-                    ..setGradient(
-                      LinearGradient(
-                        colors: [
-                          Colors.red,
-                          Colors.green,
-                          Colors.blue,
-                        ],
-                      ),
-                    )
-                    ..setLineThickness(4)
-                    ..setLineWidth(30)
-                    ..setLinePadding(-20)
-                    ..setCornerRadius(40),
+                  controller: FlutterAnimateBorderController(),
+                  lineThickness: 4,
+                  lineWidth: 30,
+                  linePadding: -20,
+                  cornerRadius: 40,
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.red,
+                      Colors.green,
+                      Colors.blue,
+                    ],
+                  ),
                   child: Container(
-                    padding: EdgeInsets.all(24),
+                    padding: EdgeInsets.all(18),
                     decoration: BoxDecoration(
                       color: Colors.black,
                       borderRadius: BorderRadius.circular(40),
@@ -233,58 +223,54 @@ class _MyAppState extends State<MyApp> {
                 ),
               ],
             ),
-            Gap(24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Gap(18),
+            Wrap(
+              spacing: 18,
+              runSpacing: 18,
               children: [
                 FlutterAnimateBorder(
-                  controller: FlutterAnimateBorderController()
-                    ..setGradient(
-                      LinearGradient(
-                        colors: [
-                          Colors.red,
-                          Colors.green,
-                          Colors.blue,
-                        ],
-                      ),
-                    )
-                    ..setLineThickness(4)
-                    ..setLineWidth(30)
-                    ..setLinePadding(-20),
+                  controller: FlutterAnimateBorderController(),
+                  lineThickness: 4,
+                  lineWidth: 30,
+                  linePadding: -20,
+                  cornerRadius: 0,
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.red,
+                      Colors.green,
+                      Colors.blue,
+                    ],
+                  ),
                   child: Image.network('https://picsum.photos/150'),
                 ),
-                Gap(24),
                 FlutterAnimateBorder(
-                  controller: FlutterAnimateBorderController()
-                    ..setGradient(
-                      LinearGradient(
-                        colors: [
-                          Colors.red,
-                          Colors.green,
-                          Colors.blue,
-                        ],
-                      ),
-                    )
-                    ..setLineThickness(4)
-                    ..setLineWidth(30)
-                    ..setLinePadding(0),
+                  controller: FlutterAnimateBorderController(),
+                  lineThickness: 4,
+                  lineWidth: 30,
+                  linePadding: 0,
+                  cornerRadius: 0,
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.red,
+                      Colors.green,
+                      Colors.blue,
+                    ],
+                  ),
                   child: Image.network('https://picsum.photos/150'),
                 ),
-                Gap(24),
                 FlutterAnimateBorder(
-                  controller: FlutterAnimateBorderController()
-                    ..setGradient(
-                      LinearGradient(
-                        colors: [
-                          Colors.red,
-                          Colors.green,
-                          Colors.blue,
-                        ],
-                      ),
-                    )
-                    ..setLineThickness(4)
-                    ..setLineWidth(30)
-                    ..setLinePadding(20),
+                  controller: FlutterAnimateBorderController(),
+                  lineThickness: 4,
+                  lineWidth: 30,
+                  linePadding: 20,
+                  cornerRadius: 0,
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.red,
+                      Colors.green,
+                      Colors.blue,
+                    ],
+                  ),
                   child: Image.network('https://picsum.photos/150'),
                 ),
               ],
