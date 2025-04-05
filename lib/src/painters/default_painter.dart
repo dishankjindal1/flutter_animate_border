@@ -1,29 +1,49 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_animate_border/flutter_animate_border.dart';
 
-/// [DefaultPainter] is used to draw the line on the perimeter of the
-/// container
-///
-/// [actors] -> You can draw more then one dots #Upcoming feature
-/// [controller] -> contains all the customizable options
+/// [DefaultPainter] is used to draw the line on the perimeter of the container
 class DefaultPainter extends CustomPainter {
-  /// [actors] -> You can draw more then one dots #Upcoming feature
+  /// [isRunning] -> draw the animation
+  final bool isRunning;
+
+  /// [actors] -> draw more then one dots #Upcoming feature
   final List<Offset> actors;
 
-  /// [controller] -> contains all the customizable options
-  final FlutterAnimateBorderController controller;
+  /// [cornerRadius] -> determine the corner radius of the animating border
+  final double cornerRadius;
+
+  /// [lineThickness] -> determine the thickness of the animating border
+  final double lineThickness;
+
+  /// [lineWidth] -> determine the length of the animation line range
+  final double lineWidth;
+
+  /// [linePadding] -> line padding offset to determine the anchor
+  final double linePadding;
+
+  /// [gradient] -> determine the [Gradient] of the animating border
+  final Gradient gradient;
 
   /// Constructor
-  const DefaultPainter({required this.actors, required this.controller});
+  const DefaultPainter(
+    this.isRunning, {
+    required this.actors,
+    required this.cornerRadius,
+    required this.lineThickness,
+    required this.lineWidth,
+    required this.linePadding,
+    required this.gradient,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (!isRunning) return;
+
     void drawActor(Offset actor) {
       /// Constants
       final paint = ui.Paint();
-      paint.strokeWidth = controller.lineThickness;
+      paint.strokeWidth = lineThickness;
       paint.strokeCap = StrokeCap.round;
       paint.style = PaintingStyle.stroke;
 
@@ -31,8 +51,8 @@ class DefaultPainter extends CustomPainter {
           Path()..addRRect(
             RRect.fromRectAndRadius(
               Rect.fromLTWH(0, 0, size.width, size.height),
-              Radius.circular(controller.cornerRadius),
-            ).inflate(controller.linePadding / 2),
+              Radius.circular(cornerRadius),
+            ).inflate(linePadding / 2),
           );
 
       final metrics = path.computeMetrics().first;
@@ -53,8 +73,8 @@ class DefaultPainter extends CustomPainter {
         }
       }
 
-      double startOffset = closestOffset - controller.lineWidth;
-      double endOffset = closestOffset + controller.lineWidth;
+      double startOffset = closestOffset - lineWidth;
+      double endOffset = closestOffset + lineWidth;
 
       Offset gapOffset = Offset.zero;
 
@@ -76,7 +96,7 @@ class DefaultPainter extends CustomPainter {
         segment.addPath(path, gapOffset);
       }
 
-      paint.shader = controller.gradient!.createShader(
+      paint.shader = gradient.createShader(
         Rect.fromCenter(center: actor, width: size.width, height: size.height),
       );
 
