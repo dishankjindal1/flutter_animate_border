@@ -1,3 +1,7 @@
+## v1.0.2
+
+- Bug Fix, dependency updates
+
 ## v1.0.1
 
 - Made the color property nullable, handle nullable color
