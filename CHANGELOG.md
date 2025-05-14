@@ -1,3 +1,7 @@
+## v1.0.1
+
+- Made the color property nullable, handle nullable color
+
 ## v1.0.0
 
 - Breaking changes, please check out the example code

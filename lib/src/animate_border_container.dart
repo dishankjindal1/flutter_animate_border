@@ -11,7 +11,7 @@ class FlutterAnimateBorder extends StatefulWidget {
   const FlutterAnimateBorder({
     required this.controller,
     required this.child,
-    this.color = Colors.black,
+    this.color,
     this.cornerRadius = 0,
     this.lineThickness = 1.0,
     this.lineWidth = 50.0,
@@ -25,7 +25,7 @@ class FlutterAnimateBorder extends StatefulWidget {
   final FlutterAnimateBorderController controller;
 
   /// [color] -> is used to determine the defaut [Gradient] of the animating border
-  final Color color;
+  final Color? color;
 
   /// used to determine the corner radius of the animating border
   final double cornerRadius;
@@ -293,7 +293,13 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
       animationController.repeat();
     }
     final defaultGradient = LinearGradient(
-      colors: [widget.color, widget.color],
+      colors:
+          widget.color != null
+              ? [widget.color!, widget.color!]
+              : [
+                Theme.of(context).primaryColor,
+                Theme.of(context).primaryColor,
+              ],
     );
 
     return CustomPaint(
