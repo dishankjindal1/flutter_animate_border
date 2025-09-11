@@ -16,7 +16,9 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final FlutterAnimateBorderController controller =
-      FlutterAnimateBorderController();
+      FlutterAnimateBorderController(isLoading: true);
+  final FlutterAnimateBorderController controller2 =
+      FlutterAnimateBorderController(isLoading: true);
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +39,7 @@ class _MyAppState extends State<MyApp> {
                 GestureDetector(
                   onTap: () {
                     setState(() {
-                      controller.isLoading = !controller.isLoading;
+                      controller.doFreeze = !controller.doFreeze;
                     });
                   },
                   child: FlutterAnimateBorder(
@@ -227,6 +229,7 @@ class _MyAppState extends State<MyApp> {
             Wrap(
               spacing: 18,
               runSpacing: 18,
+              alignment: WrapAlignment.center,
               children: [
                 FlutterAnimateBorder(
                   controller: FlutterAnimateBorderController(),
@@ -246,9 +249,9 @@ class _MyAppState extends State<MyApp> {
                 FlutterAnimateBorder(
                   controller: FlutterAnimateBorderController(),
                   lineThickness: 4,
-                  lineWidth: 30,
+                  lineWidth: 120,
                   linePadding: 0,
-                  cornerRadius: 0,
+                  cornerRadius: 16,
                   gradient: LinearGradient(
                     colors: [
                       Colors.red,
@@ -256,22 +259,34 @@ class _MyAppState extends State<MyApp> {
                       Colors.blue,
                     ],
                   ),
-                  child: Image.network('https://picsum.photos/150'),
+                  child: Container(
+                      clipBehavior: Clip.hardEdge,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Image.network('https://picsum.photos/150')),
                 ),
-                FlutterAnimateBorder(
-                  controller: FlutterAnimateBorderController(),
-                  lineThickness: 4,
-                  lineWidth: 30,
-                  linePadding: 20,
-                  cornerRadius: 0,
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.red,
-                      Colors.green,
-                      Colors.blue,
-                    ],
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      controller2.doFreeze = !controller2.doFreeze;
+                    });
+                  },
+                  child: FlutterAnimateBorder(
+                    controller: controller2,
+                    lineThickness: 4,
+                    lineWidth: 30,
+                    linePadding: 20,
+                    cornerRadius: 0,
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.red,
+                        Colors.green,
+                        Colors.blue,
+                      ],
+                    ),
+                    child: Image.network('https://picsum.photos/150'),
                   ),
-                  child: Image.network('https://picsum.photos/150'),
                 ),
               ],
             ),

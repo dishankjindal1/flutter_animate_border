@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 /// [DefaultPainter] is used to draw the line on the perimeter of the container
 class DefaultPainter extends CustomPainter {
-  /// [isRunning] -> draw the animation
-  final bool isRunning;
+  /// [drawLine] -> draw the line for border
+  final bool drawLine;
 
   /// [actors] -> draw more then one dots #Upcoming feature
   final List<Offset> actors;
@@ -27,7 +27,7 @@ class DefaultPainter extends CustomPainter {
 
   /// Constructor
   const DefaultPainter(
-    this.isRunning, {
+    this.drawLine, {
     required this.actors,
     required this.cornerRadius,
     required this.lineThickness,
@@ -38,7 +38,7 @@ class DefaultPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (!isRunning) return;
+    if (!drawLine || size.width == 0 || size.height == 0) return;
 
     void drawActor(Offset actor) {
       /// Constants
@@ -55,7 +55,11 @@ class DefaultPainter extends CustomPainter {
             ).inflate(linePadding / 2),
           );
 
-      final metrics = path.computeMetrics().first;
+      final metricsIterator = path.computeMetrics().iterator;
+      if (!metricsIterator.moveNext()) {
+        return;
+      }
+      final metrics = metricsIterator.current;
       final totalLength = metrics.length;
 
       double closestOffset = 0.0;

@@ -1,3 +1,8 @@
+## 1.2.0 [IMPROVEMENT RELEASE]
+
+- Bug Fix, if the wrapping with Image like widgets, as they are made dynamically
+- Added new feature, now you can freeze the animation use it as colorful border with gradient, check screenshots to learn more
+
 ## v1.0.2
 
 - Bug Fix, dependency updates
