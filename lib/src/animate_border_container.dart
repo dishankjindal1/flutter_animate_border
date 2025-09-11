@@ -11,9 +11,9 @@ class FlutterAnimateBorder extends StatefulWidget {
   const FlutterAnimateBorder({
     required this.controller,
     required this.child,
-    this.color,
-    this.cornerRadius = 0,
-    this.lineThickness = 1.0,
+    this.color = Colors.black,
+    this.cornerRadius = 4,
+    this.lineThickness = 4.0,
     this.lineWidth = 50.0,
     this.linePadding = 0,
     this.gradient,
@@ -24,8 +24,8 @@ class FlutterAnimateBorder extends StatefulWidget {
   /// widget.
   final FlutterAnimateBorderController controller;
 
-  /// [color] -> is used to determine the defaut [Gradient] of the animating border
-  final Color? color;
+  /// [color] -> is used to determine the default [Gradient] of the animating border
+  final Color color;
 
   /// used to determine the corner radius of the animating border
   final double cornerRadius;
@@ -55,12 +55,14 @@ class FlutterAnimateBorder extends StatefulWidget {
 class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
     with SingleTickerProviderStateMixin {
   /// Mutable
-
   Offset actor = Offset(0, 0);
   Offset box = Offset(0, 0);
   double radius = 0;
+  bool isReady = false;
 
-  /// Immutable
+  /// important to store the global key of the widget
+  /// this is most import for the widget which can change shape dynamically
+  /// like [Image] widget
   final globalKey = GlobalKey();
 
   /// Controllers
@@ -122,7 +124,7 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
   void _updateUi() {
     if (mounted) {
       setState(() {
-        if (!widget.controller.isLoading) {
+        if (widget.controller.doFreeze) {
           animationController.stop();
           return;
         }
@@ -272,9 +274,11 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
 
   @override
   Widget build(final BuildContext context) {
-    /// Because image widget can infer its own height and width
-    /// after loading, so we need to count in that new dimensions
-    if (widget.child is Image) {
+    if (globalKey.currentWidget != null) {
+      isReady = true;
+
+      /// Because image widget can infer its own height and width
+      /// after loading, so we need to count in that new dimensions
       final renderBox =
           globalKey.currentContext?.findRenderObject() as RenderBox?;
 
@@ -286,22 +290,25 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
           widget.linePaddingOffset +
           widget.linePaddingOffset;
       _calculate();
+
+      if (widget.controller.doFreeze) {
+        if (animationController.isAnimating) {
+          animationController.stop();
+        }
+      } else {
+        if (!animationController.isAnimating) {
+          animationController.repeat();
+        }
+      }
     }
 
-    if (widget.controller.isLoading && !animationController.isAnimating) {
-      animationController.reset();
-      animationController.repeat();
-    }
     final defaultGradient = LinearGradient(
-      colors:
-          widget.color != null
-              ? [widget.color!, widget.color!]
-              : [
-                Theme.of(context).primaryColor,
-                Theme.of(context).primaryColor,
-              ],
+      colors: [widget.color, widget.color],
     );
 
+    if (!isReady) {
+      return SizedBox(key: globalKey, child: widget.child);
+    }
     return CustomPaint(
       key: globalKey,
       foregroundPainter: DefaultPainter(

@@ -6,7 +6,8 @@
 
 ## Screenshot
 
-![image](https://raw.githubusercontent.com/dishankjindal1/flutter_animate_border/refs/heads/develop/screenshot_1.gif)
+![image](screenshot_1.gif)
+![image](screenshot_2.gif)
 
 ## FEATURES
 
@@ -15,10 +16,10 @@
 - [x] Border Radius for the animating border line.
 - [x] Padding between widget and the animating border line.
 - [x] Border thickness control
+- [x] Freeze the borderline <- new
 
 ## UPCOMING
 
 - [ ] Add progress bar support
 - [ ] Support custom shapes of container.
-- [ ] Widget should be able run without a controller with default values
 - [ ] More Customizations
