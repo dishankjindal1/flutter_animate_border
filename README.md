@@ -6,8 +6,8 @@
 
 ## Screenshot
 
-![image](screenshot_1.gif)
-![image](screenshot_2.gif)
+![image](https://raw.githubusercontent.com/dishankjindal1/flutter_animate_border/refs/heads/production/screenshot_1.gif)
+![image](https://raw.githubusercontent.com/dishankjindal1/flutter_animate_border/refs/heads/production/screenshot_2.gif)
 
 ## FEATURES
 
