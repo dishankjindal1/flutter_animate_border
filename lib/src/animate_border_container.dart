@@ -69,19 +69,23 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
   late final AnimationController animationController;
   late final Animation<double> animationValue;
 
-  void _calculate() {
+  void _calculate({final bool doSetState = false}) {
     scheduleMicrotask(() {
       if (mounted && globalKey.currentContext != null) {
         final renderBox =
             globalKey.currentContext!.findRenderObject() as RenderBox;
-        setState(() {
+        if (renderBox.hasSize) {
           box = Offset(renderBox.size.width, renderBox.size.height);
           radius = widget.cornerRadius;
           final findTheMinSize = math.min(box.dx, box.dy);
           final maxCornerRadius = findTheMinSize / 2;
           final pickMinCornerRadius = math.min(radius, maxCornerRadius);
           radius = pickMinCornerRadius;
-        });
+
+          if (doSetState) {
+            setState(() {});
+          }
+        }
       }
     });
   }
@@ -277,19 +281,7 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
     if (globalKey.currentWidget != null) {
       isReady = true;
 
-      /// Because image widget can infer its own height and width
-      /// after loading, so we need to count in that new dimensions
-      final renderBox =
-          globalKey.currentContext?.findRenderObject() as RenderBox?;
-
-      box =
-          Offset(
-            renderBox?.size.width ?? box.dx,
-            renderBox?.size.height ?? box.dy,
-          ) +
-          widget.linePaddingOffset +
-          widget.linePaddingOffset;
-      _calculate();
+      Future.microtask(() => _calculate(doSetState: true));
 
       if (widget.controller.doFreeze) {
         if (animationController.isAnimating) {

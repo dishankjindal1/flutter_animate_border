@@ -1,3 +1,8 @@
+## 1.2.3
+
+- Bug Fix: Only update dimensions when `renderBox.hasSize` to avoid using size before layout (e.g. Image before load)
+- Improvement: Defer build-time size calculation with `Future.microtask` and optional `doSetState` in `_calculate()` for cleaner handling of dynamically sized children
+
 ## 1.2.2 [IMPROVEMENT RELEASE]
 
 - Bug Fix: Guard `_calculate()` with `globalKey.currentContext != null` to avoid null reference when wrapping dynamically built widgets (e.g. Image)
