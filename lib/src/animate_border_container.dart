@@ -71,7 +71,7 @@ class _FlutterAnimateBorderState extends State<FlutterAnimateBorder>
 
   void _calculate() {
     scheduleMicrotask(() {
-      if (mounted) {
+      if (mounted && globalKey.currentContext != null) {
         final renderBox =
             globalKey.currentContext!.findRenderObject() as RenderBox;
         setState(() {

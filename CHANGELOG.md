@@ -1,4 +1,8 @@
-## 1.2.1 [IMPROVEMENT RELEASE]
+## 1.2.2 [IMPROVEMENT RELEASE]
+
+- Bug Fix: Guard `_calculate()` with `globalKey.currentContext != null` to avoid null reference when wrapping dynamically built widgets (e.g. Image)
+
+## 1.2.1
 
 - Bug Fix, if the wrapping with Image like widgets, as they are made dynamically
 - Added new feature, now you can freeze the animation use it as colorful border with gradient, check screenshots to learn more
